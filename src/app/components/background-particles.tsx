@@ -42,7 +42,8 @@ export default function BackgroundParticles() {
           },
         },
       }}
-      className="absolute w-full h-full"
+      className="absolute w-full h-full -z-10" // el -z lo que hace es que las partículas se muestren detrás de los demás elementos
+      //mientras mas alto es el numero de z-index mas adelante se muestra el elemento
     />
   );
 }
