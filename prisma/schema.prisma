@@ -13,12 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ShortUrl {
 
-  id String @id @default(uuid())
-  longUrl String
-  shortCode String @unique
-  createDate DateTime @default(now())
-
-
+model Url {
+  id        String  @id @default(cuid()) // ID único generado automáticamente
+  original  String  @unique // URL original
+  short     String  @unique // URL acortada
+  createdAt DateTime @default(now()) // Fecha de creación
 }

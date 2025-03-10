@@ -1,4 +1,4 @@
-import { UrlShortener} from "./components/input-link.tsx";
+import { UrlShortener} from "./components/input-link";
 
 export default function Home() {
   return (
