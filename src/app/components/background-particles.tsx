@@ -5,7 +5,6 @@ import { useCallback } from "react";
 import { Engine } from "tsparticles-engine"; // Motor de partículas el cual
 // permite cargar plugins y extensiones
 
-
 export default function BackgroundParticles() {
   const particlesInit = useCallback(async (engine: Engine) => {
     await loadSlim(engine); // Cargar la versión optimizada de tsparticles

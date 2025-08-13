@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../prisma/lib/prisma"; // Asegúrate de que la ruta sea correcta
 
 export async function POST(request: Request) {
-
   console.log("requerimiento se recibio");
   try {
     const { url } = await request.json();
@@ -21,11 +20,15 @@ export async function POST(request: Request) {
         short: shortUrl,
       },
     });
+    console.log("URL creada:", newUrl); // Log para verificar la creación de la URL
 
     return NextResponse.json({ shortUrl: newUrl.short }, { status: 201 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 

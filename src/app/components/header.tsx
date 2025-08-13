@@ -1,4 +1,3 @@
-
 const Header = () => {
   return (
     <header className="w-full bg-transparent text-white p-4 justify-between items-center flex flex-row">

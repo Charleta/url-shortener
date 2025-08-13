@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Inter} from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import BackgroundParticles from "./components/background-particles";
 import Header from "./components/header";
 
 const geistSans = Inter({
-  
   subsets: ["latin"],
 });
 
@@ -27,12 +26,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${geistSans}  antialiased`}>
-
         <Header />
         {children}
 
         <BackgroundParticles />
-        
       </body>
     </html>
   );
