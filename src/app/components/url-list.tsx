@@ -14,27 +14,23 @@ const UrlList = () => {
         setUrls(data);
       } catch (error) {
         console.error("Error fetching URLs:", error);
+      }finally{
+        setLoading(false);
       }
     };
 
     fetchUrls();
-    setLoading(false);
+    
   }, []);
 
   const handleDelete = async (id: string) => {
-  
     try {
-      await fetch(`/api/deleteUrls/${id}`,{method: "DELETE"});
-      setUrls((prev)=> prev.filter((url) => url.id !== id));
-      
-    }catch(error){
+      await fetch(`/api/deleteUrls/${id}`, { method: "DELETE" });
+      setUrls((prev) => prev.filter((url) => url.id !== id));
+    } catch (error) {
       console.error("Error deleting URL:", error);
     }
-    
-  
-
-
-  }
+  };
 
   return (
     <div className="max-w-xl mx-auto mt-8">
@@ -42,6 +38,10 @@ const UrlList = () => {
 
       {loading ? (
         <Loading />
+      ) : urls.length === 0 ? (
+        <div className="text-center text-gray-500">
+          <p>Por ahora no hay Urls acortadas</p>
+        </div>
       ) : (
         <div className="space-y-4">
           {urls.map((url) => (
@@ -54,7 +54,7 @@ const UrlList = () => {
                   Original:{" "}
                   <span className="text-blue-700">
                     {url.original.length > 50
-                      ? url.original.slice(0, 50) + "..."
+                      ? url.original.slice(0,50) + "..."
                       : url.original}
                   </span>
                 </p>
@@ -75,7 +75,6 @@ const UrlList = () => {
               <div>
                 <button onClick={(e) => handleDelete(url.id)}>Borrar </button>
               </div>
-              
             </div>
           ))}
         </div>
