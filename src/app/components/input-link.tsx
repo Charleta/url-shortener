@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 
-export const UrlShortener = () => {
+interface UrlShortenerProps {
+  onCreated: () => void;
+}
+
+export const UrlShortener = ({ onCreated }: UrlShortenerProps) => {
   //aca usamos el usestate para poder darle un valor inicial al input
   // y poder usarlo una vez este se modifique
   const [url, setUrl] = useState("");
@@ -31,12 +35,17 @@ export const UrlShortener = () => {
     console.log("Respuesta del servidor", data); // Log para verificar la respuesta del servidor
 
     if (response.ok) {
-      console.log("URL acortada:", data.shortUrl); // Log para verificar la URL acortada
+      console.log("URL acortada:", data.shortUrl);
+      // Log para verificar la URL acortada
+      // Limpiamos el input después de acortar la URL
+       setUrl(""); 
+        onCreated();
+      // Llamamos a la función onCreated para refrescar la lista de
     } else {
       console.log(data.error);
     }
-
-    setUrl(""); //Aca usamos esto para que limpie la Url, y no se quede guardada en el input
+   
+    //Aca usamos esto para que limpie la Url, y no se quede guardada en el input
   };
 
   return <InputLink url={url} setUrl={setUrl} handleSubmit={handleSubmit} />;

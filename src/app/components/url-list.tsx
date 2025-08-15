@@ -2,12 +2,17 @@
 import { useEffect, useState } from "react";
 import { Loading } from "./loading";
 
-const UrlList = () => {
+interface UrlListProps {
+  refreshKey: number;
+}
+
+const UrlList = ( {refreshKey} : UrlListProps) => {
   const [urls, setUrls] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+ 
     const fetchUrls = async () => {
+      setLoading(true);
       try {
         const response = await fetch("/api/urls");
         const data = await response.json();
@@ -19,9 +24,15 @@ const UrlList = () => {
       }
     };
 
+ 
+useEffect(()=>{
+  fetchUrls();
+},[])
+
+  useEffect(()=>{
     fetchUrls();
-    
-  }, []);
+  },[refreshKey]);
+  console.log(refreshKey);
 
   const handleDelete = async (id: string) => {
     try {
