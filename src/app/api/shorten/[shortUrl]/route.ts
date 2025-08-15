@@ -3,7 +3,7 @@ import prisma from "../../../../../prisma/lib/prisma";
 
 export async function GET(
   request: Request,
-  context: { params: { shortUrl: string } }
+  context: { params: Promise <{ shortUrl: string }> }
 ) {
   try {
     const { shortUrl } = await context.params;
