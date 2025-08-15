@@ -6,7 +6,7 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     const { id } = params;
-  await prisma.url.deleteMany({
+    await prisma.url.delete({
     where: { id: id },
   });
   return NextResponse.json(
