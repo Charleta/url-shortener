@@ -11,8 +11,8 @@ export default function Home() {
     setRefresh(prev => prev +1);
   }
   return (
-    <div>
-      <Container>
+    <div >
+      <Container >
         <h1 className="font-bold text-4xl text-center text-white mb-10">
           Acortador de URL
         </h1>
