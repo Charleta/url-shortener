@@ -5,7 +5,7 @@ const Header = () => {
         SHOR<span className="text-white">TEN</span>
       </h1>
 
-      <button> Ingresar</button>
+      
     </header>
   );
 };
