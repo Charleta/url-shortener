@@ -26,7 +26,7 @@ const UrlList = ({ refreshKey }: UrlListProps) => {
   useEffect(() => {
     fetchUrls()
   }, [])
-
+  // Refetch URLs when refreshKey changes
   useEffect(() => {
     fetchUrls()
   }, [refreshKey])
