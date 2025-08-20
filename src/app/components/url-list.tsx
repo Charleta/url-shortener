@@ -87,9 +87,12 @@ const UrlList = ({ refreshKey }: UrlListProps) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10">
-      <h2 className="text-lg font-semibold mb-3">URLs acortadas</h2>
-
+    <div
+      className="mt-6 flex-1 min-h-0 overflow-y-auto pr-1 [scrollbar-gutter:stable] overscroll-contain"
+    >
+      <h2 className="text-lg text-center font-semibold mb-4 sticky top-0 z-10 bg-[#0B1220]/60 backdrop-blur supports-[backdrop-filter]:bg-[#0B1220]/40 rounded-2xl">
+        URLs acortadas
+      </h2>
       {loading ? (
         <Loading />
       ) : urls.length === 0 ? (
@@ -97,7 +100,7 @@ const UrlList = ({ refreshKey }: UrlListProps) => {
           <p>Por ahora no hay URLs acortadas.</p>
         </div>
       ) : (
-        <ul className="space-y-3">
+        <ul className="space-y-3 pb-2">
           {urls.map((url) => (
             <li
               key={url.id}

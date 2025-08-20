@@ -13,36 +13,30 @@ export default function BackgroundParticles() {
   return (
     <Particles
       init={particlesInit}
+      className="pointer-events-none fixed inset-0 -z-10"
       options={{
-        background: {
-          color: "#0d1117", // Color de fondo
-        },
+        fullScreen: { enable: false }, // 👈 usamos la clase para posicionar
+        fpsLimit: 60,
+        detectRetina: true,
+        background: { color: "#0B1220" }, // o "transparent" si querés que tome el del <body>
         particles: {
-          number: {
-            value: 100, // Cantidad de partículas (ajústalo como quieras)
-          },
-          color: {
-            value: "#ffffff", // Color de las partículas (blanco para nieve)
-          },
-          shape: {
-            type: "circle", // Forma de las partículas
-          },
-          opacity: {
-            value: 0.8, // Opacidad de las partículas
-          },
-          size: {
-            value: 3, // Tamaño de las partículas
-          },
+          number: { value: 70, density: { enable: true, area: 800 } },
+          color: { value: "#ffffff" },
+          shape: { type: "circle" },
+          opacity: { value: 0.8 },
+          size: { value: 3 },
           move: {
             enable: true,
-            speed: 1, // Velocidad de movimiento
-            direction: "bottom", // Dirección: hacia abajo como nieve
-            straight: false, // Movimiento aleatorio
+            speed: 1,
+            direction: "bottom",
+            straight: false,
           },
         },
+        interactivity: {
+          events: { onHover: { enable: false }, onClick: { enable: false } }, // ya que es decorativo
+        },
+        pauseOnBlur: true, // menos consumo cuando la pestaña no está activa
       }}
-      className="absolute w-full h-full -z-10" // el -z lo que hace es que las partículas se muestren detrás de los demás elementos
-      //mientras mas alto es el numero de z-index mas adelante se muestra el elemento
     />
   );
 }

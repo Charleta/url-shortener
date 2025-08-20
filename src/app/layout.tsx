@@ -31,10 +31,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${playfair.variable} ${sourceSans.variable} antialiased min-h-screen overflow-x-hidden bg-[#0B1220] text-white`}
+        className={`${playfair.variable} ${sourceSans.variable} antialiased  overflow-hidden h-[100dvh] bg-[#0B1220] text-white flex flex-col`}
       >
         <Header />
-        {children}
+        <main className="flex-1 min-h-0">{children}</main>
+
         <BackgroundParticles />
       </body>
     </html>
