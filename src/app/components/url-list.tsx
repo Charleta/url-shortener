@@ -1,88 +1,174 @@
-"use client"
-import { useEffect, useState } from "react"
-import { Loading } from "./loading"
+"use client";
+
+import { useEffect, useState } from "react";
+import { Loading } from "./loading";
 
 interface UrlListProps {
-  refreshKey: number
+  refreshKey: number;
 }
 
+type UrlDto = {
+  id: string;
+  original: string;
+  short: string;
+  createdAt?: string;
+};
+
 const UrlList = ({ refreshKey }: UrlListProps) => {
-  const [urls, setUrls] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [urls, setUrls] = useState<UrlDto[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const notificacion = (msg: string) => {
+    const ventana = document.getElementById("toast");
+    if (!ventana) return;
+    ventana.textContent = msg;
+    ventana.classList.remove("opacity-0", "translate-y-2");
+    window.setTimeout(
+      () => ventana.classList.add("opacity-0", "translate-y-2"),
+      2000
+    );
+  };
 
   const fetchUrls = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await fetch("/api/urls")
-      const data = await response.json()
-      setUrls(data)
+      const response = await fetch("/api/urls");
+      const data = await response.json();
+      setUrls(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error fetching URLs:", error)
+      console.error("Error fetching URLs:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchUrls()
-  }, [])
-  // Refetch URLs when refreshKey changes
+    fetchUrls();
+  }, []);
+
   useEffect(() => {
-    fetchUrls()
-  }, [refreshKey])
-  console.log(refreshKey)
+    fetchUrls();
+  }, [refreshKey]);
 
   const handleDelete = async (id: string) => {
     try {
-      await fetch(`/api/deleteUrls/${id}`, { method: "DELETE" })
-      setUrls((prev) => prev.filter((url) => url.id !== id))
+      await fetch(`/api/deleteUrls/${id}`, { method: "DELETE" });
+      setUrls((prev) => prev.filter((url) => url.id !== id));
+      notificacion("Eliminado");
     } catch (error) {
-      console.error("Error deleting URL:", error)
+      console.error("Error deleting URL:", error);
+      notificacion("No se pudo eliminar");
     }
-  }
+  };
+
+  const openShort = (slug: string) => {
+    window.open(`/api/shorten/${slug}`, "_blank");
+  };
+
+  const copyShort = async (slug: string) => {
+    if (typeof window === "undefined") return;
+    const url = `${location.origin}/api/shorten/${slug}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      notificacion("Copiado al portapapeles");
+    } catch {
+      notificacion("No se pudo copiar");
+    }
+  };
+
+  const showQR = (slug: string) => {
+    const url = `${location.origin}/api/shorten/${slug}`;
+    window.open(
+      `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
+        url
+      )}`,
+      "_blank"
+    );
+  };
 
   return (
-    <div className="max-w-xl mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-4 text-center">URLs Acortadas</h2>
+    <div className="max-w-2xl mx-auto mt-10">
+      <h2 className="text-lg font-semibold mb-3">URLs acortadas</h2>
 
       {loading ? (
         <Loading />
       ) : urls.length === 0 ? (
-        <div className="text-center text-gray-500">
-          <p>Por ahora no hay Urls acortadas</p>
+        <div className="text-center text-white/60 border border-white/10 bg-white/5 rounded-xl p-6">
+          <p>Por ahora no hay URLs acortadas.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <ul className="space-y-3">
           {urls.map((url) => (
-            <div
+            <li
               key={url.id}
-              className="flex flex-col md:flex-row items-start md:items-center justify-between bg-white shadow rounded-lg p-4 border border-gray-100"
+              className="group rounded-xl border border-white/10 bg-white/5 p-4 md:p-5 hover:bg-white/10 transition"
             >
-              <div className="flex-1">
-                <p className="text-gray-700 font-medium break-all">
-                  Original:{" "}
-                  <span className="text-blue-700">
-                    {url.original.length > 50 ? url.original.slice(0, 50) + "..." : url.original}
-                  </span>
-                </p>
-              </div>
-              <div className="mt-2 md:mt-0 md:ml-4">
-                <p className="text-green-600 font-semibold">
-                  Corto:{" "}
-                  <a href={`/api/shorten/${url.short}`} target="_blank" rel="noopener noreferrer" className="underline">
-                    {url.short}
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-xs text-white/50">Original</p>
+                  <a
+                    href={url.original}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block truncate text-sm text-cyan-200 hover:underline"
+                    title={url.original}
+                  >
+                    {url.original}
                   </a>
-                </p>
+
+                  <div className="mt-1 text-sm">
+                    <span className="text-white/60">Corto:</span>{" "}
+                    <button
+                      onClick={() => openShort(url.short)}
+                      className="font-semibold text-emerald-400 hover:underline"
+                    >
+                      {url.short}
+                    </button>
+                    {url.createdAt && (
+                      <span className="ml-2 text-xs text-white/40">
+                        · {url.createdAt}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    onClick={() => copyShort(url.short)}
+                    className="h-9 px-3 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-sm"
+                    title="Copiar"
+                  >
+                    Copiar
+                  </button>
+                  <button
+                    onClick={() => openShort(url.short)}
+                    className="h-9 px-3 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-sm"
+                    title="Abrir"
+                  >
+                    Abrir
+                  </button>
+                  <button
+                    onClick={() => showQR(url.short)}
+                    className="h-9 px-3 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-sm"
+                    title="QR"
+                  >
+                    QR
+                  </button>
+                  <button
+                    onClick={() => handleDelete(url.id)}
+                    className="h-9 px-3 rounded-lg bg-red-400/10 hover:bg-red-400/20 border border-red-400/20 text-red-300 text-sm"
+                    title="Borrar"
+                  >
+                    Borrar
+                  </button>
+                </div>
               </div>
-              <div>
-                <button onClick={(e) => handleDelete(url.id)}>Borrar </button>
-              </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default UrlList
+export default UrlList;

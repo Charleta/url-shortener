@@ -18,12 +18,6 @@ const sourceSans = Source_Sans_3({
   weight: ["400", "500", "600"],
 });
 
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
 export const metadata: Metadata = {
   title: "LinkShort - Acortador de URL Moderno",
   description: "Generate a short URL for your long URL",
@@ -31,17 +25,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="es">
       <body
-        className={`${playfair.variable} ${sourceSans.variable}   antialiased h-screen overflow-y-hidden overflow-x-hidden`}
+        className={`${playfair.variable} ${sourceSans.variable} antialiased min-h-screen overflow-x-hidden bg-[#0B1220] text-white`}
       >
         <Header />
         {children}
-
         <BackgroundParticles />
       </body>
     </html>

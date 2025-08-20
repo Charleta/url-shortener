@@ -1,77 +1,113 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
+import type React from "react";
+import { useState } from "react";
 
 interface UrlShortenerProps {
-  onCreated: () => void
+  onCreated: () => void;
 }
 
 export const UrlShortener = ({ onCreated }: UrlShortenerProps) => {
-  //aca usamos el usestate para poder darle un valor inicial al input
-  // y poder usarlo una vez este se modifique
-  const [url, setUrl] = useState("")
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const notify = (msg: string) => {
+    const el = document.getElementById("toast");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.remove("opacity-0", "translate-y-2");
+    window.setTimeout(
+      () => el.classList.add("opacity-0", "translate-y-2"),
+      2000
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    //usamos el preventDefault para evitar que la pagina se recargue
-    e.preventDefault()
+    e.preventDefault();
+    setErrorMsg("");
 
     if (!url.trim()) {
-      //usamos el signo de admiracion para decir que si el campo esta vacio
-
-      console.log("Campo vacio")
-      return
-    }
-    console.log("Url a acortar del input", url)
-
-    const response = await fetch("api/shorten", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url }), // Enviamos la URL al servidor
-    })
-
-    const data = await response.json() // Esperamos la respuesta del servidor
-    console.log("Respuesta del servidor", data) // Log para verificar la respuesta del servidor
-
-    if (response.ok) {
-      console.log("URL acortada:", data.shortUrl)
-      // Log para verificar la URL acortada
-      // Limpiamos el input después de acortar la URL
-      setUrl("")
-      onCreated()
-      // Llamamos a la función onCreated para refrescar la lista de
-    } else {
-      console.log(data.error)
+      setErrorMsg("Ingresá una URL válida.");
+      return;
     }
 
-    //Aca usamos esto para que limpie la Url, y no se quede guardada en el input
-  }
+    try {
+      setLoading(true);
+      const response = await fetch("/api/shorten", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
 
-  return <InputLink url={url} setUrl={setUrl} handleSubmit={handleSubmit} />
-}
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data?.error || "No se pudo acortar.");
+      }
+
+      setUrl("");
+      onCreated();
+      notify("URL acortada ✨");
+    } catch (err: any) {
+      setErrorMsg(err?.message || "Ocurrió un error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <InputLink
+      url={url}
+      setUrl={setUrl}
+      handleSubmit={handleSubmit}
+      loading={loading}
+      errorMsg={errorMsg}
+    />
+  );
+};
 
 interface InputLinkProps {
-  url: string
-  setUrl: (value: string) => void
-  handleSubmit: (e: React.FormEvent) => void
+  url: string;
+  setUrl: (value: string) => void;
+  handleSubmit: (e: React.FormEvent) => void;
+  loading?: boolean;
+  errorMsg?: string;
 }
 
-export const InputLink = ({ url, setUrl, handleSubmit }: InputLinkProps) => {
+export const InputLink = ({
+  url,
+  setUrl,
+  handleSubmit,
+  loading = false,
+  errorMsg = "",
+}: InputLinkProps) => {
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center w-full">
-      <input
-        type="url"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        placeholder="Introduce un enlace"
-        className="w-full px-4 py-2 text-black bg-gray-200 rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-      />
-      <button type="submit" className="px-4 py-2 mt-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-        Acortar
-      </button>
+    <form onSubmit={handleSubmit} className="grid gap-3">
+      <label htmlFor="url" className="text-sm text-white/80">
+        Enlace
+      </label>
+      <div className="flex gap-2">
+        <input
+          id="url"
+          type="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://ejemplo.com/tu-enlace-largo"
+          className="flex-1 h-11 rounded-xl bg-white/10 border border-white/10 placeholder-white/40 px-4 outline-none focus:ring-2 focus:ring-cyan-300/50 focus:border-cyan-300/50"
+        />
+        <button
+          type="submit"
+          disabled={loading}
+          className="h-11 px-5 rounded-xl bg-cyan-400 text-gray-900 font-semibold disabled:opacity-60 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 transition"
+        >
+          {loading ? "Acortando..." : "Acortar"}
+        </button>
+      </div>
+      {errorMsg && <p className="text-sm text-red-300">{errorMsg}</p>}
+      <p className="text-xs text-white/50">
+        Ej: enlaces de YouTube, artículos, formularios, etc.
+      </p>
     </form>
-  )
-}
+  );
+};
